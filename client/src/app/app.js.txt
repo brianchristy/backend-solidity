@@ -1,0 +1,88 @@
+import React, { useState } from 'react';
+import { ethers } from 'ethers';
+
+// Replace with your contract address and ABI
+const CONTRACT_ADDRESS = 'YOUR_CONTRACT_ADDRESS';
+const CONTRACT_ABI = [
+    // Replace with your contract ABI
+    {
+        "inputs": [],
+        "stateMutability": "nonpayable",
+        "type": "constructor"
+    },
+    {
+        "inputs": [],
+        "name": "owner",
+        "outputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "totalContributions",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "contribute",
+        "outputs": [],
+        "stateMutability": "payable",
+        "type": "function"
+    }
+];
+
+function App() {
+    const [amount, setAmount] = useState('');
+    const [message, setMessage] = useState('');
+
+    async function handleContribute() {
+        if (!window.ethereum) {
+            setMessage('Please install MetaMask to contribute');
+            return;
+        }
+
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        const signer = provider.getSigner();
+
+        const contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
+
+        try {
+            const tx = await contract.contribute({ value: ethers.utils.parseEther(amount) });
+            await tx.wait();
+            setMessage('Contribution successful!');
+        } catch (err) {
+            console.error(err);
+            setMessage('Failed to contribute');
+        }
+    }
+
+    return (
+        <div className="App">
+            <h1>Crowdfunding App</h1>
+            <input
+                type="number"
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+                placeholder="Enter amount in ETH"
+            />
+            <button onClick={handleContribute}>Contribute</button>
+            <p>{message}</p>
+        </div>
+    );
+}
+
+export default App;
