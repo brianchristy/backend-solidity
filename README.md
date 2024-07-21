@@ -107,7 +107,9 @@ donateToCampaign(0, '0.1'); // Donate 0.1 ETH to campaign with ID 0
 
 ## License
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License.
+
+[MIT](https://choosealicense.com/licenses/mit/)
 
 ## Acknowledgements
 
