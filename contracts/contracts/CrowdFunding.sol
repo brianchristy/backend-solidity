@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: UNLICENSED
+
 pragma solidity ^0.8.9;
 
 contract CrowdFunding {
@@ -7,7 +8,6 @@ contract CrowdFunding {
         string title;
         string description;
         uint256 target;
-        uint256 deadline;
         uint256 amountCollected;
         string image;
         address[] donators;
@@ -22,22 +22,15 @@ contract CrowdFunding {
         address _owner,
         string memory _title,
         string memory _description,
-        uint256 _target,
-        uint256 _deadline,
+        uint256 _target_in_WEI,
         string memory _image
     ) public returns (uint256) {
         Campaign storage campaign = campaigns[numberOfCampaigns];
 
-        require(
-            campaign.deadline < block.timestamp,
-            "The deadline should be a date in the future."
-        );
-
         campaign.owner = _owner;
         campaign.title = _title;
         campaign.description = _description;
-        campaign.target = _target;
-        campaign.deadline = _deadline;
+        campaign.target = _target_in_WEI;
         campaign.amountCollected = 0;
         campaign.image = _image;
 
@@ -50,6 +43,15 @@ contract CrowdFunding {
         uint256 amount = msg.value;
 
         Campaign storage campaign = campaigns[_id];
+
+        require(
+            campaign.amountCollected < campaign.target,
+            "The campaign has already met its target."
+        );
+        require(
+            campaign.amountCollected + amount <= campaign.target,
+            "Donation exceeds the campaign's target."
+        );
 
         campaign.donators.push(msg.sender);
         campaign.donations.push(amount);
